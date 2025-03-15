@@ -1,0 +1,99 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Rol {
+  cveRol Int @id @default(autoincrement())
+  descripcion String @db.VarChar(250)
+  clave String @db.VarChar(45)
+  activo Boolean
+
+  Usuario Usuario[]
+}
+
+model Categoria {
+  cveCategoria Int @id @default(autoincrement())
+  descripcion String @db.VarChar(250)
+  activo Boolean
+
+  Producto Producto[]
+}
+
+model Usuario{
+  cveUsuario Int @id @default(autoincrement())
+  nombre String @db.VarChar(350)
+  apellidos String @db.VarChar(450)
+  username String @db.VarChar(150)
+  password String @db.VarChar(500)
+  fechaRegistro DateTime @default(now())
+  cveRol Int
+  rol Rol @relation(fields: [cveRol],references: [cveRol])
+
+  Venta Venta[]
+
+  Carrito Carrito[]
+}
+
+model Producto {
+  cveProducto Int @id @default(autoincrement())
+  descripcion String @db.VarChar(350)
+  precio Float
+  cantidad Int
+  cveCategoria Int
+  categoria Categoria @relation(fields: [cveCategoria], references: [cveCategoria])
+  activo Boolean
+
+  DetalleVenta DetalleVenta[]
+  DetalleCarrito DetalleCarrito[]
+
+}
+
+model Venta {
+  cveVenta Int @id @default(autoincrement())
+  totalVenta Float
+  fechaVenta DateTime @default(now())
+  cveUsuario Int
+  usuario Usuario @relation(fields: [cveUsuario],references: [cveUsuario])
+
+  DetalleVenta DetalleVenta[]
+}
+
+model DetalleVenta {
+  cveDetalleVenta Int @id @default(autoincrement())
+  cantidad Int
+  precioProducto Int
+  cveProducto Int
+  cveVenta Int
+  producto Producto @relation(fields: [cveProducto], references: [cveProducto])
+  venta Venta @relation(fields: [cveVenta], references: [cveVenta])
+}
+
+model Carrito {
+  cveCarrito Int @id @default(autoincrement())
+  cveUsuario Int @unique
+  fechaCreacion DateTime @default(now())
+  usuario Usuario @relation(fields: [cveUsuario], references: [cveUsuario])
+
+  DetalleCarrito DetalleCarrito[]
+}
+
+model DetalleCarrito {
+  cveDetalleCarrito Int @id @default(autoincrement())
+  cveCarrito Int
+  cveProducto Int
+  cantidad Int
+  precioProducto Int
+  carrito Carrito @relation(fields: [cveCarrito], references: [cveCarrito])
+  producto Producto @relation(fields: [cveProducto], references: [cveProducto])
+}
