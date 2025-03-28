@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import PrismaService from 'src/prisma.service';
 import { DetalleVentaDto } from 'src/venta/dto/create-detalle-venta.dto';
 import { CreateCarritoDto } from './dto/create-carrito.dto';
@@ -14,26 +14,34 @@ export class CarritoService {
         // Obtener el carrito del usuario
         const carrito = await this.prismaSvc.carrito.findUnique({
             where: {
-                cveUsuario: cveUsuario
+                cveUsuario: parseInt(cveUsuario.toString())
             },
             include: {
-                DetalleCarrito: true
+                DetalleCarrito: {
+                 include:{
+                    producto: true
+                 }   
+                }
             }
         });
 
         if (!carrito) {
-            throw new Error("El carrito no existe");
+             throw new BadRequestException("El carrito no existe");
+        }
+
+        if (carrito.DetalleCarrito.length==0) {
+             throw new BadRequestException("Carrito vacio");
         }
 
         // Calcular el total de la venta
         const totalVenta = carrito.DetalleCarrito.reduce((total, item) => {
-            return total + (item.cantidad * item.precioProducto);
+            return total + (item.cantidad * item.producto.precio);
         }, 0);
 
         // Crear la venta
         let ventaNew = {
             totalVenta: totalVenta,
-            cveUsuario: cveUsuario
+            cveUsuario: parseInt(cveUsuario.toString())
         };
         let ventaInsert = await this.prismaSvc.venta.create({
             data: ventaNew,
@@ -45,9 +53,10 @@ export class CarritoService {
 
         // Insertar los detalles de la venta y actualizar el stock
         for (const item of carrito.DetalleCarrito) {
+
             let detalleVenta = {
                 cantidad: item.cantidad,
-                precioProducto: item.precioProducto,
+                precioProducto: item.producto.precio,
                 cveProducto: item.cveProducto,
                 cveVenta: ventaInsert.cveVenta
             };
@@ -87,7 +96,7 @@ export class CarritoService {
 
         // Verificar que el producto existe
         if (!productoActual) {
-            throw new Error("El producto no existe");
+             throw new BadRequestException("El producto no existe");
         }
 
         // Calcular la nueva cantidad
@@ -131,34 +140,85 @@ export class CarritoService {
             });
         }
 
-        // Agregar el producto al carrito
-        return await this.prismaSvc.detalleCarrito.create({
-            data: {
+    // Verificar si el producto ya existe en el detalleCarrito
+    const detalleExistente = await this.prismaSvc.detalleCarrito.findUnique({
+        where: {
+            cveCarrito_cveProducto: {
                 cveCarrito: carrito.cveCarrito,
-                cveProducto: createCarritoDto.cveProducto,
-                cantidad: createCarritoDto.cantidad,
-                precioProducto: createCarritoDto.precioProducto
+                cveProducto: createCarritoDto.cveProducto
+            }
+        }
+    });
+
+    // Obtener el producto para verificar el stock
+    const producto = await this.prismaSvc.producto.findUnique({
+        where: {
+            cveProducto: createCarritoDto.cveProducto
+        },
+        select: {
+            cantidad: true // Stock disponible
+        }
+    });
+
+    if (!producto) {
+        throw new BadRequestException("El producto no existe");
+    }
+
+        // Calcular la cantidad total que se desea agregar
+        const cantidadSolicitada = detalleExistente
+        ? detalleExistente.cantidad + createCarritoDto.cantidad
+        : createCarritoDto.cantidad;
+
+    // Validar si hay suficiente stock
+    if (cantidadSolicitada > producto.cantidad) {
+        throw new BadRequestException(
+            `Stock insuficiente. Solo hay ${producto.cantidad} unidades disponibles.`
+        );
+    }
+
+
+    if (detalleExistente) {
+        // Si el producto ya existe, actualizar la cantidad
+        return await this.prismaSvc.detalleCarrito.update({
+            where: {
+                cveCarrito_cveProducto: {
+                    cveCarrito: carrito.cveCarrito,
+                    cveProducto: createCarritoDto.cveProducto
+                }
+            },
+            data: {
+                cantidad: detalleExistente.cantidad + createCarritoDto.cantidad
             }
         });
+        } else {
+            // Si el producto no existe, agregarlo al carrito
+            return await this.prismaSvc.detalleCarrito.create({
+                data: {
+                    cveCarrito: carrito.cveCarrito,
+                    cveProducto: createCarritoDto.cveProducto,
+                    cantidad: createCarritoDto.cantidad
+                }
+            });
+        }
     }
 
     async eliminarProductoDelCarrito(cveUsuario: number, cveProducto: number) {
         // Obtener el carrito del usuario
         const carrito = await this.prismaSvc.carrito.findUnique({
             where: {
-                cveUsuario: cveUsuario
+                cveUsuario: parseInt(cveUsuario.toString())
             }
         });
 
         if (!carrito) {
-            throw new Error("El carrito no existe");
+             throw new BadRequestException("El carrito no existe");
         }
 
         // Eliminar el producto del carrito
         return await this.prismaSvc.detalleCarrito.deleteMany({
             where: {
                 cveCarrito: carrito.cveCarrito,
-                cveProducto: cveProducto
+                cveProducto: parseInt(cveProducto.toString())
             }
         });
     }

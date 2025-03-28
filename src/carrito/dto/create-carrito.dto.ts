@@ -7,7 +7,5 @@ export class CreateCarritoDto {
       @IsNumber()
       cantidad:number;
       @IsNumber()
-      precioProducto:number;
-      @IsNumber()
       cveProducto:number;
 }

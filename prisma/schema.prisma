@@ -93,7 +93,9 @@ model DetalleCarrito {
   cveCarrito Int
   cveProducto Int
   cantidad Int
-  precioProducto Int
   carrito Carrito @relation(fields: [cveCarrito], references: [cveCarrito])
   producto Producto @relation(fields: [cveProducto], references: [cveProducto])
+
+  @@unique([cveCarrito, cveProducto]) // Clave compuesta
+
 }
