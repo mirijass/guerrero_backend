@@ -17,7 +17,8 @@ export class ProductoService {
                 categoria: true,
                 cveCategoria: true,
                 cveProducto: true, 
-                activo: true             
+                activo: true, 
+                imagen: true            
             }
 
         });
@@ -120,6 +121,20 @@ export class ProductoService {
     });
   }
 
+  async guardarImagen(cveProducto: number, imagenBuffer: Buffer) {
+        return await this.prisma.producto.update({
+            where: { cveProducto },
+            data: { imagen: imagenBuffer },
+        });
+    }
+
+    async obtenerImagen(cveProducto: number) {
+        const producto = await this.prisma.producto.findUnique({
+            where: { cveProducto },
+            select: { imagen: true },
+        });
+        return producto?.imagen;
+    }
 
 
 }

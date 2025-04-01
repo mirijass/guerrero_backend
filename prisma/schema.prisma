@@ -53,10 +53,11 @@ model Producto {
   cveCategoria Int
   categoria Categoria @relation(fields: [cveCategoria], references: [cveCategoria])
   activo Boolean
+ imagen Bytes? @db.LongBlob  // Campo para almacenar la imagen como BLOB (opcional)
+
 
   DetalleVenta DetalleVenta[]
-  DetalleCarrito DetalleCarrito[]
-
+  Carrito Carrito[]
 }
 
 model Venta {
@@ -83,19 +84,10 @@ model Carrito {
   cveCarrito Int @id @default(autoincrement())
   cveUsuario Int @unique
   fechaCreacion DateTime @default(now())
-  usuario Usuario @relation(fields: [cveUsuario], references: [cveUsuario])
-
-  DetalleCarrito DetalleCarrito[]
-}
-
-model DetalleCarrito {
-  cveDetalleCarrito Int @id @default(autoincrement())
-  cveCarrito Int
   cveProducto Int
   cantidad Int
-  carrito Carrito @relation(fields: [cveCarrito], references: [cveCarrito])
-  producto Producto @relation(fields: [cveProducto], references: [cveProducto])
 
-  @@unique([cveCarrito, cveProducto]) // Clave compuesta
+  usuario Usuario @relation(fields: [cveUsuario], references: [cveUsuario])
+  producto Producto @relation(fields: [cveProducto], references: [cveProducto])
 
 }

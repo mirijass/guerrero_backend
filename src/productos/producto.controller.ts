@@ -1,9 +1,10 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, ParseBoolPipe, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, ParseBoolPipe, ParseIntPipe, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UtilsService } from 'src/shared/services/utils/utils.service';
 import { AuthGuard } from 'src/shared/guard/auth/auth.guard';
 import { ProductoService } from './producto.service';
 import { CreateProductoDto } from './dto/create-producto.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('carrito/producto')
 @ApiTags('Productos')
@@ -17,7 +18,7 @@ export class ProductoController {
     @Get()
     async ListarProducto(){
         return await this. productoSvc.listarProductos();
-     }
+    }
 
     @Post ()
     async insertarProducto(@Body() producto: CreateProductoDto) {
@@ -32,7 +33,7 @@ export class ProductoController {
         // Insertar Producto y devolver el Producto insertado
         return await this.productoSvc.insertar(producto);
 
-     }
+    }
 
     @Patch (':cveProducto')
     async actualizarProducto(@Param('cveProducto', ParseIntPipe) cveProducto: number, @Body() Producto:CreateProductoDto){
@@ -55,7 +56,7 @@ export class ProductoController {
 
         //Actualizar la informacion y devolver el Producto actualizado
         return await this. productoSvc.actualizar(cveProducto, Producto);
-     }
+    }
 
     @Delete(':cveProducto')
     async eliminarProducto(@Param ('cveProducto', ParseIntPipe) cveProducto: number){
@@ -75,7 +76,7 @@ export class ProductoController {
 
         //Actualizar la informacion y devolver el Producto actualizado
         return await this. productoSvc.cambiarEstatus(cveProducto, estatus);
-     }
+    }
 
     @Get('autocomplete')
     async autocomplete(@Query('q') query: string) {
@@ -86,6 +87,34 @@ export class ProductoController {
         // Llamamos al servicio de autocompletado
         const suggestions = await this.productoSvc.autocompleteUserNames(query);
         return suggestions;
+    }
+
+
+    // Nuevo endpoint para subir una imagen
+    @Post(':cveProducto/imagen')
+    @UseInterceptors(FileInterceptor('file'))
+    async subirImagen(
+        @Param('cveProducto', ParseIntPipe) cveProducto: number,
+        @UploadedFile() file: Express.Multer.File,
+    ) {
+        if (!file) {
+            throw new BadRequestException('No se proporcionó ninguna imagen');
+        }
+
+        // Guardar la imagen en la base de datos
+        return await this.productoSvc.guardarImagen(cveProducto, file.buffer);
+    }
+
+    // Nuevo endpoint para obtener una imagen
+    @Get(':cveProducto/imagen')
+    async obtenerImagen(@Param('cveProducto', ParseIntPipe) cveProducto: number) {
+        const imagen = await this.productoSvc.obtenerImagen(cveProducto);
+        if (!imagen) {
+            throw new BadRequestException('El producto no tiene una imagen asociada');
+        }
+
+        // Devolver la imagen como un buffer
+        return imagen;
     }
 
 
