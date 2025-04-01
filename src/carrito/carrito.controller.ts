@@ -2,7 +2,7 @@ import { Controller, Post, Get, Delete, Param, Body } from '@nestjs/common';
 import { CarritoService } from './carrito.service';
 import { CreateCarritoDto } from './dto/create-carrito.dto';
 
-@Controller('api/carrito')
+@Controller('carrito/carrito')
 export class CarritoController {
   constructor(private readonly carritoService: CarritoService) {}
 

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import PrismaService from 'src/prisma.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
@@ -80,19 +80,32 @@ export class UsuarioService {
         });
     }
     async eliminar(cveUsuario: number){
-        return await this.prisma.usuario.delete({
-            where: {
-                cveUsuario: cveUsuario
-            },
-            select:{
-                cveUsuario: true,
-                apellidos: true,
-                username: true,
-                password: false,
-                fechaRegistro: false,
-                cveRol:true,
-                rol: false
+        try {
+            return await this.prisma.usuario.delete({
+                where: {
+                    cveUsuario: cveUsuario
+                },
+                select:{
+                    cveUsuario: true,
+                    apellidos: true,
+                    username: true,
+                    password: false,
+                    fechaRegistro: false,
+                    cveRol:true,
+                    rol: false
+                }
+            });
+        } catch (error) {
+            // Verificar si el error es por restricciones de integridad referencial
+            if (error.code === 'P2003') { // Código de error de Prisma para violación de clave foránea
+                throw new BadRequestException(
+                    'No se puede eliminar el usuario porque tiene compras o un carrito relacionado.'
+                );
             }
-        });
+            // Lanzar otros errores no controlados
+            throw new BadRequestException(error.message);
+    
+        }
+       
     }
 }

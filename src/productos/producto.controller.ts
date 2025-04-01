@@ -5,7 +5,7 @@ import { AuthGuard } from 'src/shared/guard/auth/auth.guard';
 import { ProductoService } from './producto.service';
 import { CreateProductoDto } from './dto/create-producto.dto';
 
-@Controller('api/producto')
+@Controller('carrito/producto')
 @ApiTags('Productos')
 @UseGuards(AuthGuard)
 export class ProductoController {

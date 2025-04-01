@@ -4,7 +4,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/shared/guard/auth/auth.guard';
 import { CreateVentaDto } from './dto/create-venta.dto';
 
-@Controller('api/venta')
+@Controller('carrito/venta')
 @ApiTags('Ventas')
 @UseGuards(AuthGuard)
 export class VentaController {
