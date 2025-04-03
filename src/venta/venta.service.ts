@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import PrismaService from 'src/prisma.service';
 import { CreateVentaDto } from './dto/create-venta.dto';
 import { DetalleVentaDto } from './dto/create-detalle-venta.dto';
+import { EstadoVenta } from '@prisma/client';
 
 @Injectable()
 export class VentaService {
@@ -11,7 +12,27 @@ export class VentaService {
     ){}
 
     async listar(){
-        return await this.prismaSvc.venta.findMany();
+        return await this.prismaSvc.venta.findMany({
+            include:{
+                DetalleVenta: {
+                    include:{
+                        venta: false, 
+                        producto: {
+                            select:{
+                                nombre: true,
+                                descripcion: true,
+                            }
+                        }
+                    }
+                },
+                usuario: {
+                    select:{
+                        nombre: true,
+                        apellidos: true
+                    }
+                }
+            }
+        });
     }
 
     async insertar(venta: CreateVentaDto){
@@ -23,7 +44,8 @@ export class VentaService {
             data: ventaNew,
             select: {
                 cveVenta: true,
-                fechaVenta: true
+                fechaVenta: true,
+                estado: true,
             }
         });
 
@@ -95,5 +117,18 @@ export class VentaService {
         });
     }
     
+    async cambiarEstado(cveVenta: number, nuevoEstado: string) {
+        // Validar que el nuevo estado sea válido
+        const estadosValidos:EstadoVenta[] = ['Pendiente', 'Procesando', 'Enviado', 'Entregado', 'Cancelado'];
+        if (!estadosValidos.includes(nuevoEstado as EstadoVenta)) {
+            throw new Error('El estado proporcionado no es válido');
+        }
+    
+        // Actualizar el estado de la venta
+        return await this.prismaSvc.venta.update({
+            where: { cveVenta },
+            data: { estado: nuevoEstado as EstadoVenta },
+        });
+    }
 
 }

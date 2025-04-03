@@ -67,8 +67,16 @@ model Venta {
   fechaVenta DateTime @default(now())
   cveUsuario Int
   usuario Usuario @relation(fields: [cveUsuario],references: [cveUsuario])
-
+  estado EstadoVenta @default(Pendiente) 
   DetalleVenta DetalleVenta[]
+}
+
+enum EstadoVenta {
+  Pendiente
+  Procesando
+  Enviado
+  Entregado
+  Cancelado
 }
 
 model DetalleVenta {
