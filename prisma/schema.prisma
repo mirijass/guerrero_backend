@@ -48,6 +48,7 @@ model Usuario{
 model Producto {
   cveProducto Int @id @default(autoincrement())
   descripcion String @db.VarChar(350)
+  nombre String @db.VarChar(100)
   precio Float
   cantidad Int
   cveCategoria Int

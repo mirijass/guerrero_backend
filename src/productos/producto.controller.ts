@@ -24,7 +24,7 @@ export class ProductoController {
     async insertarProducto(@Body() producto: CreateProductoDto) {
 
         //TODO:Si el producto existe
-        const usernames = await this. productoSvc.verificarProducto(producto.descripcion);
+        const usernames = await this. productoSvc.verificarProducto(producto.nombre);
         if(usernames.length > 0){
             throw new BadRequestException ('El nombre de Producto ya existe');
         }

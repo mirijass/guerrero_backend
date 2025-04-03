@@ -8,6 +8,12 @@ export class CreateProductoDto {
     @MaxLength(350)
     descripcion: string;
 
+    @IsString()
+    @IsNotEmpty()
+    @MinLength(3)
+    @MaxLength(100)
+    nombre: string;
+
     @IsNumber()
     @IsNotEmpty()
     @Max(99999)

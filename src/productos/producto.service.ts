@@ -11,6 +11,7 @@ export class ProductoService {
     async listarProductos(){
         return await this.prisma.producto.findMany({
             select: {
+                nombre: true,
                 descripcion: true,
                 precio: true,
                 cantidad: true,
@@ -27,7 +28,7 @@ export class ProductoService {
     async verificarProducto(producto: string){
         return await this.prisma.producto.findMany({
             where:{
-                descripcion: producto
+                nombre: producto
             }
         });
     }
@@ -45,6 +46,7 @@ export class ProductoService {
         return await this.prisma.producto.create({
             data: producto,
             select: {
+                nombre: true,
                 descripcion: true,
                 precio: true,
                 cantidad: true,
@@ -63,6 +65,7 @@ export class ProductoService {
             },
             data: producto,
             select: {
+                nombre: true,
                 descripcion: true,
                 precio: true,
                 cantidad: true,
@@ -79,6 +82,7 @@ export class ProductoService {
                 cveProducto: cveProducto
             },
             select: {
+                nombre: true,
                 descripcion: true,
                 precio: true,
                 cantidad: true,
@@ -110,6 +114,7 @@ export class ProductoService {
         activo: true
       },
       select: {
+        nombre: true,
         descripcion: true,
                 precio: true,
                 cantidad: true,
