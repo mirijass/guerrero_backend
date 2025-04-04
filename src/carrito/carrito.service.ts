@@ -121,11 +121,11 @@ export class CarritoService {
             throw new BadRequestException("El producto no existe");
         }
 
-        const cantidadSolicitada = productoEnCarrito
-            ? productoEnCarrito.cantidad + cantidad
-            : cantidad;
+        // const cantidadSolicitada = productoEnCarrito
+        //     ? productoEnCarrito.cantidad + cantidad
+        //     : cantidad;
 
-        if (cantidadSolicitada > producto.cantidad) {
+        if (cantidad > producto.cantidad) {
             throw new BadRequestException(
                 `Stock insuficiente. Solo hay ${producto.cantidad} unidades disponibles.`
             );
@@ -138,7 +138,7 @@ export class CarritoService {
                     cveCarrito: productoEnCarrito.cveCarrito
                 },
                 data: {
-                    cantidad: cantidadSolicitada
+                    cantidad: cantidad
                 }
             });
         } else {

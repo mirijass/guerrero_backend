@@ -27,6 +27,7 @@ export class UsuarioController {
         if (roles.length <= 0){
             throw new BadRequestException('El rol no existe');
         }
+        usuario.cveRol = roles[0].cveRol;
 
         //TODO:Si el username existe
         const usernames = await this.usuarioSvc.verificarUsername(usuario.username);
@@ -58,6 +59,7 @@ export class UsuarioController {
         if (rol.length <= 0){
             throw new BadRequestException('El rol no existe');
         }
+        usuario.cveRol = rol[0].cveRol;
 
         //Actualizar la informacion y devolver el usuario actualizado
         return await this.usuarioSvc.actualizar(cveUsuario, usuario);

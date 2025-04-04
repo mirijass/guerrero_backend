@@ -28,10 +28,38 @@ export class VentaService {
                 usuario: {
                     select:{
                         nombre: true,
-                        apellidos: true
+                        apellidos: true,
+                        direccion: true,
                     }
                 }
             }
+        });
+    }
+
+    async listarPorUsuario(cveUsuario: number) {
+        return await this.prismaSvc.venta.findMany({
+            where: {
+                cveUsuario: cveUsuario, // Filtrar por el ID del usuario
+            },
+            include: {
+                DetalleVenta: {
+                    include: {
+                        producto: {
+                            select: {
+                                nombre: true,
+                                descripcion: true,
+                            },
+                        },
+                    },
+                },
+                usuario: {
+                    select: {
+                        nombre: true,
+                        apellidos: true,
+                        direccion: true,
+                    },
+                },
+            },
         });
     }
 

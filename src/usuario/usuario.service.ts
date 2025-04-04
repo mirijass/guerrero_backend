@@ -25,7 +25,7 @@ export class UsuarioService {
     async verificarRol(cveRol: number){
         return await this.prisma.rol.findMany({
             where: {
-                cveRol: cveRol
+                clave: cveRol+""
             }
         });
     }
@@ -57,7 +57,8 @@ export class UsuarioService {
                 password: false,
                 fechaRegistro: true,
                 cveRol: true,
-                rol: false
+                rol: false, 
+                direccion: true
             }
         });
     }
@@ -75,7 +76,8 @@ export class UsuarioService {
                 password: false,
                 fechaRegistro: false,
                 cveRol:true,
-                rol: false
+                rol: false,
+                direccion: true
             }
         });
     }

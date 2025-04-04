@@ -38,6 +38,7 @@ model Usuario{
   password String @db.VarChar(500)
   fechaRegistro DateTime @default(now())
   cveRol Int
+  direccion String @db.VarChar(350)
   rol Rol @relation(fields: [cveRol],references: [cveRol])
 
   Venta Venta[]
@@ -68,6 +69,7 @@ model Venta {
   cveUsuario Int
   usuario Usuario @relation(fields: [cveUsuario],references: [cveUsuario])
   estado EstadoVenta @default(Pendiente) 
+  metodoPago MeteodoPago @default(Efectivo)
   DetalleVenta DetalleVenta[]
 }
 
@@ -77,6 +79,13 @@ enum EstadoVenta {
   Enviado
   Entregado
   Cancelado
+}
+
+enum MeteodoPago {
+  Efectivo
+  TarjetaCredito
+  TarjetaDebito
+  TransferenciaBancaria
 }
 
 model DetalleVenta {

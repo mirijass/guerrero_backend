@@ -16,6 +16,11 @@ export class VentaController {
         return await this.ventaSvc.listar();
     }
 
+    @Get('usuario/:cveUsuario')
+    async listarVentasPorUsuario(@Param('cveUsuario', ParseIntPipe) cveUsuario: number) {
+        return await this.ventaSvc.listarPorUsuario(cveUsuario);
+    }
+
     @Post()
     async insertarVenta(@Body() venta: CreateVentaDto) {
        

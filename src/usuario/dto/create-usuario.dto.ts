@@ -29,4 +29,8 @@ export class CreateUsuarioDto {
     @IsInt()
     @IsNotEmpty()
     cveRol: number
+
+    @IsString()
+    @IsNotEmpty()
+    direccion: string;
 }
