@@ -25,6 +25,26 @@ export class ProductoService {
         });
     }
 
+    async listarProductosPorCategoria(cveCategoria: number) {
+        return await this.prisma.producto.findMany({
+            where: {
+                cveCategoria: cveCategoria, // Filtrar por la categoría
+                activo: true // Opcional: Solo productos activos
+            },
+            select: {
+                nombre: true,
+                descripcion: true,
+                precio: true,
+                cantidad: true,
+                categoria: true,
+                cveCategoria: true,
+                cveProducto: true,
+                activo: true,
+                imagen: true
+            }
+        });
+    }
+
     async verificarProducto(producto: string){
         return await this.prisma.producto.findMany({
             where:{

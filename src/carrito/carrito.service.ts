@@ -154,13 +154,17 @@ export class CarritoService {
     }
 
     async eliminarProductoDelCarrito(cveUsuario: number, cveProducto: number) {
+
+        //Convertir cveUsuario a número
+        cveUsuario = Number(cveUsuario);
+        cveProducto = Number(cveProducto);
+
         const productoEnCarrito = await this.prismaSvc.carrito.findFirst({
             where: {
                 cveUsuario,
                 cveProducto
             }
         });
-
         if (!productoEnCarrito) {
             throw new BadRequestException("El producto no está en el carrito");
         }

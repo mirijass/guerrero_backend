@@ -10,6 +10,14 @@ export class AuthService {
        return await this.prisma.usuario.findFirst({
             where: {
               username: username
+                 },
+                 include:{
+                    rol:{
+                        select:{
+                            cveRol: true,
+                            clave: true
+                        }
+                    }
                  }
              });
     }

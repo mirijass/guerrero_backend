@@ -16,8 +16,13 @@ export class ProductoController {
 
     @UseGuards(AuthGuard)
     @Get()
-    async ListarProducto(){
+    async listarProducto(){
         return await this. productoSvc.listarProductos();
+    }
+
+    @Get('categoria/:cveCategoria')
+    async listarProductosPorCategoria(@Param('cveCategoria', ParseIntPipe) cveCategoria: number) {
+        return await this.productoSvc.listarProductosPorCategoria(cveCategoria);
     }
 
     @Post ()
