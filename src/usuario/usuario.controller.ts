@@ -6,7 +6,7 @@ import { UtilsService } from 'src/shared/services/utils/utils.service';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { AuthGuard } from 'src/shared/guard/auth/auth.guard';
 
-@Controller('carrito/usuario')
+@Controller('api/usuario')
 @ApiTags('Usuarios')
 // @UseGuards(AuthGuard)
 export class UsuarioController {

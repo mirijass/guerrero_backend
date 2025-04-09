@@ -2,7 +2,7 @@ import { BadRequestException, Body, Controller, Delete, Get, Param, ParseBoolPip
 import { CategoriaDto } from './dto/categoria.dto';
 import { CategoriaService } from './categoria.service';
 
-@Controller('carrito/categoria')
+@Controller('api/categoria')
 export class CategoriaController {
 
     constructor(private categoriaSvc: CategoriaService){}

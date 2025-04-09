@@ -6,7 +6,7 @@ import { ProductoService } from './producto.service';
 import { CreateProductoDto } from './dto/create-producto.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-@Controller('carrito/producto')
+@Controller('api/producto')
 @ApiTags('Productos')
 @UseGuards(AuthGuard)
 export class ProductoController {

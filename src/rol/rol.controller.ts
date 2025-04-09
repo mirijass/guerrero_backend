@@ -3,7 +3,7 @@ import { RolService } from './rol.service';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/shared/guard/auth/auth.guard';
 
-@Controller('carrito/rol')
+@Controller('api/rol')
 @ApiTags('Roles')
 @UseGuards(AuthGuard)
 export class RolController {

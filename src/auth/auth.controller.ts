@@ -5,7 +5,7 @@ import { AuthDto } from 'src/shared/dto/auth.dto';
 import { UtilsService } from 'src/shared/services/utils/utils.service';
 import { AuthService } from './auth.service';
 
-@Controller('carrito/auth')
+@Controller('api/auth')
 @ApiTags('Auth')
 export class AuthController {
 
